@@ -1,0 +1,32 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract CommodityToken is ERC20 {
+    address public admin;
+    uint256 public commodityReserve;
+
+    constructor(string memory name, string memory symbol, uint256 initialReserve) ERC20(name, symbol) {
+        admin = msg.sender;
+        commodityReserve = initialReserve;
+        _mint(admin, initialReserve);
+    }
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Not authorized");
+        _;
+    }
+
+    function updateReserve(uint256 newReserve) external onlyAdmin {
+        commodityReserve = newReserve;
+    }
+
+    function burnTokens(uint256 amount) external onlyAdmin {
+        _burn(msg.sender, amount);
+    }
+
+    function mintTokens(address to, uint256 amount) external onlyAdmin {
+        _mint(to, amount);
+    }
+}
